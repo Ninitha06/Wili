@@ -193,9 +193,10 @@ export default class TransactionScreen extends React.Component {
   };
 
   checkStudentforReturn = async () => {
-    const transactionRef = await db
-      .collection("transaction")
-      .where("bookId", "==", this.state.scannedBookId)
+    var transactionRef = await db
+      .collection('transaction')
+      .where('bookId', '==', this.state.scannedBookId)
+      .orderBy('date', 'desc')
       .limit(1)
       .get();
     console.log(transactionRef);
