@@ -73,7 +73,21 @@ export default class SearchScreen extends React.Component {
     var text = this.state.search.toUpperCase();
     var enteredText = text.split("");
 
-    if (enteredText[0].toUpperCase() === "S") {
+    // Use !searchText or text[0] === 'undefined'
+    if (!text) {
+      var bookRef = await db
+        .collection('transaction')
+        .startAfter(this.state.lastVisibleTransaction)
+        .limit(10)
+        .get();
+
+      bookRef.docs.map((doc) => {
+        this.setState({
+          allTransactions: [...this.state.allTransactions, doc.data()],
+          lastDocument: doc,
+        });
+      });
+    } else if (enteredText[0].toUpperCase() === "S") {
       const query = await db
         .collection("transaction")
         .where("studentId", "==", text)
@@ -104,11 +118,26 @@ export default class SearchScreen extends React.Component {
 
   searchTransaction = async (text) => {
     var enteredText = text.split("");
-    text = text.toUpperCase();
-    if (enteredText[0].toUpperCase() === "S") {
+   
+    
+     // Use !searchText or text[0] === 'undefined'
+    if (!text) {
+      var bookRef = await db
+        .collection('transaction')
+        .limit(10)
+        .get();
+
+      bookRef.docs.map((doc) => {
+        this.setState({
+          allTransactions: [...this.state.allTransactions, doc.data()],
+          lastVisibleTransaction: doc,
+        });
+      });
+    } 
+    else if (enteredText[0].toUpperCase() === "S") {
       const query = await db
         .collection("transaction")
-        .where("studentId", "==", text)
+        .where("studentId", "==", text.toUpperCase())
         .get();
       query.docs.map((doc) => {
         console.log(doc);
@@ -120,7 +149,7 @@ export default class SearchScreen extends React.Component {
     } else if (enteredText[0].toUpperCase() === "B") {
       const query = await db
         .collection("transaction")
-        .where("bookId", "==", text)
+        .where("bookId", "==", text.toUpperCase())
         .get();
       query.docs.map((doc) => {
         console.log(doc.data());
